@@ -1,0 +1,13 @@
+# Dados brutos/tratados do FBref/Sports Reference.
+# Licença de uso não permite redistribuição em massa dos dados coletados;
+# os dados residem em um Volume do Databricks, fora do controle de versão.
+data/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
