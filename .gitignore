@@ -11,3 +11,6 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# Documento orientador do MVP (material do curso, não é pra distribuir no repo público)
+MVP Engenharia de Daods.pdf
