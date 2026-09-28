@@ -7,13 +7,15 @@ Pipeline de dados na nuvem (Databricks, arquitetura Bronze → Silver → Gold) 
 ```
 Estudo-estrangeiros/
 ├── notebooks/
-│   ├── 01_bronze_ingestion   # Ingestão dos CSVs do FBref -> tabelas Bronze
-│   ├── 02_silver_transform   # Limpeza, tipagem e modelagem -> tabelas Silver
-│   ├── 03_data_quality       # Checagens de qualidade sobre a Silver
-│   ├── 04_gold_tables        # Agregações -> tabelas Gold
-│   └── 05_analysis           # Respostas às perguntas de negócio
+│   ├── 01_bronze_ingestion.ipynb   # Ingestão dos CSVs do FBref -> tabelas Bronze
+│   ├── 02_silver_transform.ipynb   # Limpeza, tipagem e modelagem -> tabelas Silver
+│   ├── 03_data_quality.ipynb       # Checagens de qualidade sobre a Silver
+│   ├── 04_gold_tables.ipynb        # Agregações -> tabelas Gold
+│   └── 05_Analysis.ipynb           # Respostas às perguntas de negócio
 ├── docs/
-│   └── catalogo_dados.md     # Catálogo de dados (Silver e Gold)
+│   ├── catalogo_dados.md           # Catálogo de dados (Silver e Gold)
+│   ├── decisoes_metodologicas.md   # Decisões de modelagem e seu racional
+│   └── images/                     # Gráficos e evidências usados neste README
 ├── .gitignore
 └── README.md
 ```
@@ -61,7 +63,7 @@ Os arquivos brutos foram enviados manualmente (upload) para um **Volume do Datab
 
 **Sobre a licença e o repositório público**: como o FBref não autoriza redistribuição em massa dos dados, os arquivos brutos (`data/`) não são versionados neste repositório — apenas o código (notebooks, documentação, catálogo de dados). Os dados residem só no Volume do Databricks, fora do controle de versão.
 
-Notebook de referência: [`notebooks/01_bronze_ingestion`](notebooks/01_bronze_ingestion).
+Notebook de referência: [`notebooks/01_bronze_ingestion.ipynb`](notebooks/01_bronze_ingestion.ipynb).
 
 ![Volume do Databricks com os arquivos CSV carregados](docs/images/print_volume_databricks.jpg)
 
@@ -87,15 +89,17 @@ As decisões de modelagem tomadas ao longo da construção do pipeline — inclu
 
 ## Pipeline de Dados (Etapa 4.4)
 
-O pipeline é organizado em **5 notebooks**, um por etapa, dentro de `notebooks/` (sincronizados com este repositório via Databricks Repos):
+O pipeline é organizado em **5 notebooks**, um por etapa, desenvolvidos no Databricks e versionados neste repositório em `notebooks/`:
 
 | Notebook | Função |
 |---|---|
-| `01_bronze_ingestion` | Lê os CSVs do Volume, detecta automaticamente a linha de cabeçalho (o export do FBref tem preâmbulo de citação + linha de categoria antes do cabeçalho real), remove linha de rodapé de citação, adiciona metadados de ingestão e grava como tabela Delta Bronze — uma célula por tabela de origem, um loop interno por temporada (2014-2026). |
-| `02_silver_transform` | Tipagem tolerante (`try_cast`, necessária pela heterogeneidade de formato entre temporadas completas e a temporada em andamento), extração de código de nacionalidade e posição primária/secundária, cálculo de idade por geração e faixa etária, garantia da granularidade jogador-temporada-clube. |
-| `03_data_quality` | Checagens de completude, unicidade, consistência/acurácia e outliers sobre a Silver. |
-| `04_gold_tables` | Agregações: `age_nationality_minutes`, `foreign_players`, `club_performance`. |
-| `05_analysis` | Consultas e visualizações respondendo às 6 perguntas de negócio. |
+| [`01_bronze_ingestion`](notebooks/01_bronze_ingestion.ipynb) | Lê os CSVs do Volume, detecta automaticamente a linha de cabeçalho (o export do FBref tem preâmbulo de citação + linha de categoria antes do cabeçalho real), remove linha de rodapé de citação, adiciona metadados de ingestão e grava como tabela Delta Bronze — uma célula por tabela de origem, um loop interno por temporada (2014-2026). |
+| [`02_silver_transform`](notebooks/02_silver_transform.ipynb) | Tipagem tolerante (`try_cast`, necessária pela heterogeneidade de formato entre temporadas completas e a temporada em andamento), extração de código de nacionalidade e posição primária/secundária, cálculo de idade por geração e faixa etária, garantia da granularidade jogador-temporada-clube. |
+| [`03_data_quality`](notebooks/03_data_quality.ipynb) | Checagens de completude, unicidade, consistência/acurácia e outliers sobre a Silver, além da validação cruzada contra os agregados publicados pela fonte. |
+| [`04_gold_tables`](notebooks/04_gold_tables.ipynb) | Agregações: `age_nationality_minutes`, `foreign_players`, `club_performance` e a tabela de referência `regras_limite_estrangeiros`. |
+| [`05_Analysis`](notebooks/05_Analysis.ipynb) | Consultas e visualizações respondendo às 6 perguntas de negócio. |
+
+Os notebooks estão versionados em formato `.ipynb`, que o GitHub renderiza com as saídas preservadas — tabelas e gráficos podem ser inspecionados diretamente pelo navegador, sem necessidade de executar o pipeline.
 
 Evidência das tabelas persistidas nas três camadas, no Unity Catalog:
 
